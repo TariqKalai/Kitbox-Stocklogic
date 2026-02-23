@@ -1,17 +1,15 @@
-<Window xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Stocklogic.ViewModels"
         x:Class="Stocklogic.Views.DimensionPage"
         x:DataType="vm:DimensionPageViewModel"
-        Width="800"
-        Height="500"
         Background="#F1F8E9">
 
   <DockPanel LastChildFill="True">
     <StackPanel Background="#DCEDC8" DockPanel.Dock="Top">
       <Grid Margin="20,10">
         <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-          <Image Width="35" Height="35" Source="/Assets/parrot.png" />
+          <Image Width="35" Height="35" Source="/Assets/avalonia-logo.ico" />
           <TextBlock Margin="10,0,5,0"
                      VerticalAlignment="Center"
                      FontSize="24"
@@ -101,4 +99,4 @@
       </Border>
     </Grid>
   </DockPanel>
-</Window>
+</UserControl>
