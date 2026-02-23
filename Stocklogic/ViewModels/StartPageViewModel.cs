@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Stocklogic.Services;
 
 namespace Stocklogic.ViewModels;
 
@@ -7,7 +8,6 @@ public partial class StartPageViewModel : ViewModelBase
     [RelayCommand]
     private void Start()
     {
-        // Logic to navigate to DimensionPage
-        // If you are using a ViewLocator/ReactiveUI, you'd change a 'CurrentPage' property here
+        NavigationService.Navigate(new DimensionPage());
     }
 }
