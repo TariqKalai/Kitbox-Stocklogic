@@ -69,31 +69,34 @@
                      TextDecorations="Underline" />
           <StackPanel Orientation="Horizontal">
             <TextBlock Width="150"
-                       FontSize="32"
-                       FontWeight="Black"
-                       Text="Depth : " />
-            <TextBox Width="400"
-                     Height="60"
-                     VerticalContentAlignment="Center"
-                     Background="White"
-                     BorderThickness="0"
-                     CornerRadius="20"
-                     FontSize="24"
-                     Text="{Binding Depth}" />
+                      FontSize="32"
+                      FontWeight="Black"
+                      Text="Depth : " />
+            <ComboBox Width="400"
+                      Height="60"
+                      VerticalContentAlignment="Center"
+                      Background="White"
+                      BorderThickness="0"
+                      CornerRadius="20"
+                      FontSize="24"
+                      ItemsSource="{Binding AvailableDepths}"
+                      SelectedItem="{Binding Depth}" />
           </StackPanel>
+
           <StackPanel Orientation="Horizontal">
             <TextBlock Width="150"
-                       FontSize="32"
-                       FontWeight="Black"
-                       Text="Width : " />
-            <TextBox Width="400"
-                     Height="60"
-                     VerticalContentAlignment="Center"
-                     Background="White"
-                     BorderThickness="0"
-                     CornerRadius="20"
-                     FontSize="24"
-                     Text="{Binding Width}" />
+                      FontSize="32"
+                      FontWeight="Black"
+                      Text="Width : " />
+            <ComboBox Width="400"
+                      Height="60"
+                      VerticalContentAlignment="Center"
+                      Background="White"
+                      BorderThickness="0"
+                      CornerRadius="20"
+                      FontSize="24"
+                      ItemsSource="{Binding AvailableWidths}"
+                      SelectedItem="{Binding Width}" />
           </StackPanel>
         </StackPanel>
       </Border>
