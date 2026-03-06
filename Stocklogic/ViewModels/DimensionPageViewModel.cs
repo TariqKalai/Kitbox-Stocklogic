@@ -30,7 +30,7 @@ public partial class DimensionPageViewModel : ViewModelBase
     {
         if (Depth.HasValue && Width.HasValue)
         {
-            // Logique pour passer à l'étape suivante
+            NavigationService.Navigate(new LockerPage());
         }
     }
 }
