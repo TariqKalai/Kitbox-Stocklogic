@@ -73,10 +73,12 @@ public partial class LockerPageViewModel : ViewModelBase
     [RelayCommand]
     private void Continue()
     {
-        // Logique pour passer à la page suivante (ex: récapitulatif final)
         if (Lockers.Count > 0)
         {
-            // NavigationService.Navigate(new SuccessPage()); 
+            // On passe la liste des casiers au constructeur du nouveau ViewModel
+            var summaryVM = new SummaryPageViewModel(Lockers);
+            var summaryPage = new SummaryPage { DataContext = summaryVM };
+            NavigationService.Navigate(summaryPage);
         }
     }
 }

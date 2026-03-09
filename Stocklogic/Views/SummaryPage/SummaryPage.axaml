@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stocklogic.ViewModels"
+             x:Class="Stocklogic.Views.SummaryPage"
+             x:DataType="vm:SummaryPageViewModel"
+             Background="#F1F8E9">
+
+  <DockPanel LastChildFill="True">
+    <Border Height="60"
+            Background="White"
+            BorderBrush="#E0E0E0"
+            BorderThickness="0,1,0,0"
+            DockPanel.Dock="Bottom">
+      <StackPanel Margin="0,0,20,0"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Center"
+                  Orientation="Horizontal">
+        <Button Content="Continue Shopping"
+                Command="{Binding ContinueShoppingCommand}"
+                Margin="0,0,20,0"
+                Background="Transparent"
+                FontWeight="Bold"
+                Foreground="Black" />
+        <Button Content="Pay"
+                Command="{Binding PayCommand}"
+                Background="#4CAF50"
+                CornerRadius="5"
+                Foreground="White"
+                Padding="30,10" />
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer Margin="40">
+      <StackPanel Spacing="20">
+        <TextBlock Text="Récapitulatif de votre commande" 
+                   FontSize="32" 
+                   FontWeight="Black" 
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+        <ItemsControl ItemsSource="{Binding FinalLockers}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Background="White" 
+                      Margin="0,5" 
+                      Padding="15" 
+                      CornerRadius="10" 
+                      BoxShadow="0 2 5 0 #20000000">
+                <Grid ColumnDefinitions="*, Auto">
+                  <StackPanel Grid.Column="0">
+                    <TextBlock Text="{Binding Description}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Dimensions}" FontSize="12" Foreground="Gray"/>
+                  </StackPanel>
+                  <TextBlock Grid.Column="1" 
+                             Text="{Binding Price, StringFormat='{}{0} €'}" 
+                             VerticalAlignment="Center" 
+                             FontWeight="Bold"/>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Separator Height="2" Background="#B9CBA5" Margin="0,20"/>
+
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+          <TextBlock Text="Total à payer : " FontSize="24" VerticalAlignment="Center"/>
+          <TextBlock Text="{Binding TotalPrice, StringFormat='{}{0} €'}"
+                     FontSize="36" 
+                     FontWeight="Black" 
+                     Foreground="#2E7D32"/>
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>
