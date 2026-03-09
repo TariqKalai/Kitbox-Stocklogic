@@ -11,14 +11,32 @@ public partial class LockerPageViewModel : ViewModelBase
 {
     // Liste observable des casiers (se met à jour automatiquement dans l'UI)
     public ObservableCollection<LockerModel> Lockers { get; } = new();
+    public ObservableCollection<string> AvailableColors { get; } = new() { "White", "Black", "Grey", "Beige" };
+public ObservableCollection<string> AvailableDoorTypes { get; } = new() { "Wood", "Glass", "Plastic" };
+
+
 
     // Casier actuellement sélectionné par l'utilisateur
     [ObservableProperty]
     private LockerModel? _selectedLocker;
+    public bool IsLockerSelected => SelectedLocker != null;
+
+// Quand SelectedLocker change, notifier IsLockerSelected
+partial void OnSelectedLockerChanged(LockerModel? value)
+{
+    OnPropertyChanged(nameof(IsLockerSelected));
+}
 
     // Propriété pour le prix total
     [ObservableProperty]
     private double _totalPrice;
+    [ObservableProperty] private bool _height30;
+[ObservableProperty] private bool _height45;
+[ObservableProperty] private bool _height70 = true;
+
+[ObservableProperty] private bool _doorWood;
+[ObservableProperty] private bool _doorGlass = true;
+[ObservableProperty] private bool _doorPlastic;
 
     // Propriété pour le nombre total de casiers
     public int TotalItemsCount => Lockers.Count;
@@ -87,6 +105,11 @@ public int TotalDepth => 42;
             NavigationService.Navigate(summaryPage);
         }
     }
+    [RelayCommand]
+private void SelectLocker(LockerModel locker)
+{
+    SelectedLocker = locker;
+}
 }
 
 // Modèle simple pour représenter un casier
@@ -95,5 +118,9 @@ public class LockerModel
     public int Height { get; set; }
     public double Price { get; set; }
     public string Description { get; set; } = string.Empty;
-    public string Dimensions => $"{Height}x62x42 cm"; // Exemple
+    public string Dimensions => $"{Height}x62x42 cm";
+    
+    public string LockerColor { get; set; } = "White";
+    public string DoorColor { get; set; } = "White";
+    public string DoorType { get; set; } = "Wood";
 }

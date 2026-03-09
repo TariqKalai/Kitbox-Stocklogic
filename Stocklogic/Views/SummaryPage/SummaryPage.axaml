@@ -32,7 +32,7 @@
 
     <ScrollViewer Margin="40">
       <StackPanel Spacing="20">
-        <TextBlock Text="Récapitulatif de votre commande" 
+        <TextBlock Text="Order review" 
                    FontSize="32" 
                    FontWeight="Black" 
                    HorizontalAlignment="Center"
@@ -64,7 +64,7 @@
         <Separator Height="2" Background="#B9CBA5" Margin="0,20"/>
 
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-          <TextBlock Text="Total à payer : " FontSize="24" VerticalAlignment="Center"/>
+          <TextBlock Text="Total to pay : " FontSize="24" VerticalAlignment="Center"/>
           <TextBlock Text="{Binding TotalPrice, StringFormat='{}{0} €'}"
                      FontSize="36" 
                      FontWeight="Black" 
