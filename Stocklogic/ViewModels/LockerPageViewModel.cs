@@ -22,6 +22,9 @@ public partial class LockerPageViewModel : ViewModelBase
 
     // Propriété pour le nombre total de casiers
     public int TotalItemsCount => Lockers.Count;
+    public int TotalHeight => Lockers.Sum(l => l.Height);
+public int TotalWidth => 62; 
+public int TotalDepth => 42; 
 
     // Options pour le formulaire d'ajout (exemples)
     public ObservableCollection<int> AvailableHeights { get; } = new() { 32, 42, 52 };
@@ -61,6 +64,9 @@ public partial class LockerPageViewModel : ViewModelBase
         TotalPrice = Lockers.Sum(l => l.Price);
         // Notifier le changement pour le compteur
         OnPropertyChanged(nameof(TotalItemsCount));
+        OnPropertyChanged(nameof(TotalHeight));  
+    OnPropertyChanged(nameof(TotalWidth));   
+    OnPropertyChanged(nameof(TotalDepth));   
     }
 
     [RelayCommand]
