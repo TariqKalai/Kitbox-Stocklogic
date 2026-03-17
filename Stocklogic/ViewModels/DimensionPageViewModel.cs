@@ -23,6 +23,7 @@ public partial class DimensionPageViewModel : ViewModelBase
     private void Back()
     {
         NavigationService.Navigate(new StartPage());
+        DataBaseService.ReadProductsByHeight();
     }
 
     [RelayCommand]

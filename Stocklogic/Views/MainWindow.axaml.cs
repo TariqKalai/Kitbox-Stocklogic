@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Stocklogic.Services;
 
+
 namespace Stocklogic.Views;
 
 public partial class MainWindow : Window
