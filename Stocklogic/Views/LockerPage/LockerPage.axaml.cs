@@ -1,13 +1,14 @@
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Stocklogic.Models;
 using Stocklogic.ViewModels;
 
 namespace Stocklogic.Views;
+
 public partial class LockerPage : UserControl
 {
-    public LockerPage()
+    public LockerPage(Cabinet cabinet)
     {
         InitializeComponent();
-        DataContext = new LockerPageViewModel();
+        DataContext = new LockerPageViewModel(cabinet);
     }
 }

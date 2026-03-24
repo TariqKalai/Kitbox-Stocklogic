@@ -1,7 +1,8 @@
-using System.Collections.ObjectModel;
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Stocklogic.Models;
 using Stocklogic.Services;
 using Stocklogic.Views;
 
@@ -9,29 +10,28 @@ namespace Stocklogic.ViewModels;
 
 public partial class SummaryPageViewModel : ViewModelBase
 {
-    [ObservableProperty]
-    private ObservableCollection<LockerModel> _finalLockers;
+    public List<Locker> FinalLockers { get; }
+    public Cabinet Cabinet { get; }
 
+    // Le prix total sera calculé depuis la DB dans une prochaine itération
     [ObservableProperty]
-    private double _totalPrice;
+    private decimal _totalPrice = 0;
 
-    public SummaryPageViewModel(ObservableCollection<LockerModel> lockers)
+    public SummaryPageViewModel(List<Locker> lockers, Cabinet cabinet)
     {
         FinalLockers = lockers;
-        TotalPrice = lockers.Sum(l => l.Price);
+        Cabinet      = cabinet;
     }
 
     [RelayCommand]
     private void ContinueShopping()
     {
-        // Retourne à la page de sélection initiale ou des dimensions
         NavigationService.Navigate(new DimensionPage());
     }
 
     [RelayCommand]
     private void Pay()
     {
-        // Logique de paiement ou page de succès
-        // NavigationService.Navigate(new SuccessPage());
+        // TODO: logique de paiement / page de confirmation
     }
 }
