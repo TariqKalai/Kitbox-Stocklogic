@@ -257,20 +257,124 @@ public static class DataBaseService
         return result;
     }
 
-    public static int CreateOrder(string email, decimal totalPrice, decimal deposit, string status)
+    /// <summary>
+    /// Returns the PK_ID_Part for each requested code.
+    /// Codes not found in DB are simply absent from the result.
+    /// </summary>
+    public static Dictionary<string, int> GetPartIdsByCode(IEnumerable<string> codes)
+    {
+        var result   = new Dictionary<string, int>();
+        var codeList = codes.ToList();
+        if (codeList.Count == 0) return result;
+        try
+        {
+            using var connection = new MySqlConnection(ConnString);
+            connection.Open();
+
+            string inClause = string.Join(",", codeList.Select((_, i) => $"@c{i}"));
+            string sql      = $"SELECT PK_ID_Part, Code FROM Part WHERE Code IN ({inClause})";
+
+            using var cmd = new MySqlCommand(sql, connection);
+            int idx = 0;
+            foreach (var code in codeList)
+                cmd.Parameters.AddWithValue($"@c{idx++}", code);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+                result[reader["Code"]?.ToString() ?? ""] = Convert.ToInt32(reader["PK_ID_Part"]);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("GetPartIdsByCode error: " + ex.Message);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Saves the full cabinet structure (Cabin → Lockers → Locker_Part) to the DB.
+    /// The angle iron, which belongs to the cabinet as a whole, is attached to the first locker.
+    /// Returns the new cabin ID, or -1 on error.
+    /// </summary>
+    public static int SaveCabinet(Cabinet cabinet, Dictionary<string, int> partIdsByCode)
     {
         try
         {
             using var connection = new MySqlConnection(ConnString);
             connection.Open();
 
-            string sql = "INSERT INTO `Customer Order` (Date, Email, Total_price, Deposit, Status) " +
-                         "VALUES (CURDATE(), @email, @total, @deposit, @status)";
+            // 1. Insert Cabin  (DB column "Length" = our Depth)
+            string cabinSql = "INSERT INTO Cabin (Length, Width) VALUES (@depth, @width)";
+            using var cabinCmd = new MySqlCommand(cabinSql, connection);
+            cabinCmd.Parameters.AddWithValue("@depth", cabinet.Depth);
+            cabinCmd.Parameters.AddWithValue("@width", cabinet.Width);
+            cabinCmd.ExecuteNonQuery();
+            int cabinId = (int)cabinCmd.LastInsertedId;
+
+            // 2. Angle iron belongs to the whole cabinet; we attach it to the first locker
+            var (angCode, angQty) = CabinetComposerService.GetAngleIronParts(cabinet);
+            bool angleIronSaved   = false;
+
+            // 3. Insert each Locker and its parts
+            foreach (var locker in cabinet.Lockers)
+            {
+                string lockerSql = "INSERT INTO Locker (FK_ID_cabin, Color, Height, Door_color, Glass_Door) " +
+                                   "VALUES (@cabin, @color, @height, @doorColor, @glassDoor)";
+                using var lockerCmd = new MySqlCommand(lockerSql, connection);
+                lockerCmd.Parameters.AddWithValue("@cabin",     cabinId);
+                lockerCmd.Parameters.AddWithValue("@color",     locker.Color);
+                lockerCmd.Parameters.AddWithValue("@height",    locker.Height);
+                lockerCmd.Parameters.AddWithValue("@doorColor", locker.HasDoors ? locker.DoorColor : (object)DBNull.Value);
+                lockerCmd.Parameters.AddWithValue("@glassDoor", locker.HasDoors && locker.DoorColor == "Glass" ? 1 : 0);
+                lockerCmd.ExecuteNonQuery();
+                int lockerId = (int)lockerCmd.LastInsertedId;
+
+                foreach (var (code, qty) in CabinetComposerService.GetLockerParts(locker))
+                {
+                    if (!partIdsByCode.TryGetValue(code, out int partId)) continue;
+                    InsertLockerPart(connection, lockerId, partId, qty);
+                }
+
+                if (!angleIronSaved && partIdsByCode.TryGetValue(angCode, out int angPartId))
+                {
+                    InsertLockerPart(connection, lockerId, angPartId, angQty);
+                    angleIronSaved = true;
+                }
+            }
+
+            return cabinId;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("SaveCabinet error: " + ex.Message);
+            return -1;
+        }
+    }
+
+    private static void InsertLockerPart(MySqlConnection connection, int lockerId, int partId, int qty)
+    {
+        string sql = "INSERT INTO Locker_Part (PK_ID_Locker, PK_ID_Part, Quantity) VALUES (@locker, @part, @qty)";
+        using var cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@locker", lockerId);
+        cmd.Parameters.AddWithValue("@part",   partId);
+        cmd.Parameters.AddWithValue("@qty",    qty);
+        cmd.ExecuteNonQuery();
+    }
+
+    public static int CreateOrder(string email, decimal totalPrice, decimal deposit, string status, int cabinId)
+    {
+        try
+        {
+            using var connection = new MySqlConnection(ConnString);
+            connection.Open();
+
+            string sql = "INSERT INTO `Customer Order` (Date, Email, Total_price, Deposit, Status, FK_ID_cabin) " +
+                         "VALUES (CURDATE(), @email, @total, @deposit, @status, @cabin)";
             using var cmd = new MySqlCommand(sql, connection);
             cmd.Parameters.AddWithValue("@email",   email);
             cmd.Parameters.AddWithValue("@total",   totalPrice);
             cmd.Parameters.AddWithValue("@deposit", deposit);
             cmd.Parameters.AddWithValue("@status",  status);
+            cmd.Parameters.AddWithValue("@cabin",   cabinId);
             cmd.ExecuteNonQuery();
             return (int)cmd.LastInsertedId;
         }
@@ -279,6 +383,55 @@ public static class DataBaseService
             Console.WriteLine("CreateOrder error: " + ex.Message);
             return -1;
         }
+    }
+
+    /// <summary>
+    /// Returns all parts needed for an order, with quantities aggregated across all lockers.
+    /// </summary>
+    public static List<PartStockLine> GetOrderLines(int orderId)
+    {
+        var lines = new List<PartStockLine>();
+        try
+        {
+            using var connection = new MySqlConnection(ConnString);
+            connection.Open();
+
+            string sql = @"SELECT p.Code, p.Kind, p.Color, p.Height,
+                                  SUM(lp.Quantity)            AS QuantityNeeded,
+                                  IFNULL(p.In_stock, 0)       AS In_stock,
+                                  IFNULL(p.Customer_price, 0) AS Customer_price
+                           FROM `Customer Order` co
+                           JOIN Locker     l  ON l.FK_ID_cabin      = co.FK_ID_cabin
+                           JOIN Locker_Part lp ON lp.PK_ID_Locker   = l.PK_ID_Locker
+                           JOIN Part        p  ON p.PK_ID_Part       = lp.PK_ID_Part
+                           WHERE co.PK_ID_order = @orderId
+                           GROUP BY p.PK_ID_Part, p.Code, p.Kind, p.Color, p.Height
+                           ORDER BY p.Kind, p.Color";
+
+            using var cmd = new MySqlCommand(sql, connection);
+            cmd.Parameters.AddWithValue("@orderId", orderId);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                string kind   = reader["Kind"]?.ToString()  ?? "";
+                string color  = reader["Color"]?.ToString() ?? "";
+                int    height = reader["Height"] == DBNull.Value ? 0 : Convert.ToInt32(reader["Height"]);
+
+                lines.Add(new PartStockLine
+                {
+                    PartCode       = reader["Code"]?.ToString() ?? "",
+                    PartName       = height > 0 ? $"{kind} – {color} (H:{height})" : $"{kind} – {color}",
+                    QuantityNeeded = Convert.ToInt32(reader["QuantityNeeded"]),
+                    InStock        = Convert.ToInt32(reader["In_stock"]),
+                    UnitPrice      = Convert.ToDecimal(reader["Customer_price"]),
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("GetOrderLines error: " + ex.Message);
+        }
+        return lines;
     }
 
     public static void DecrementStock(Dictionary<string, int> partQuantities)
