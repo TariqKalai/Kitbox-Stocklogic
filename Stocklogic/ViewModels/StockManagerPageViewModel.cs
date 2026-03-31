@@ -72,7 +72,8 @@ public partial class StockManagerPageViewModel : ViewModelBase
 
     private List<CustomerOrder> _allOrders = new();
 
-    public ObservableCollection<CustomerOrder> FilteredOrders { get; } = new();
+    public ObservableCollection<CustomerOrder>  FilteredOrders { get; } = new();
+    public ObservableCollection<PartStockLine>  OrderLines     { get; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelectedOrder))]
@@ -83,6 +84,15 @@ public partial class StockManagerPageViewModel : ViewModelBase
     public bool HasSelectedOrder  => SelectedOrder != null;
     public bool CanMarkReady      => SelectedOrder?.Status == OrderStatus.Pending;
     public bool CanMarkCompleted  => SelectedOrder?.Status == OrderStatus.Ready;
+
+    partial void OnSelectedOrderChanged(CustomerOrder? value)
+    {
+        OrderSaveMessage = "";
+        OrderLines.Clear();
+        if (value == null) return;
+        foreach (var line in DataBaseService.GetOrderLines(value.Id))
+            OrderLines.Add(line);
+    }
 
     [ObservableProperty] private string _orderSaveMessage = "";
 
