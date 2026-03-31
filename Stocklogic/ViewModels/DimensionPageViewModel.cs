@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic; // À ajouter pour List<>
+﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Stocklogic.Models;
 using Stocklogic.Services;
 using Stocklogic.Views;
 
@@ -31,7 +32,8 @@ public partial class DimensionPageViewModel : ViewModelBase
     {
         if (Depth.HasValue && Width.HasValue)
         {
-            NavigationService.Navigate(new LockerPage());
+            var cabinet = new Cabinet { Depth = Depth.Value, Width = Width.Value };
+            NavigationService.Navigate(new LockerPage(cabinet));
         }
     }
 }

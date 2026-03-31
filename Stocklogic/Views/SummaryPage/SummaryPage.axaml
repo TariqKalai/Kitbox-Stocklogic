@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Stocklogic.ViewModels"
+             xmlns:models="using:Stocklogic.Models"
              x:Class="Stocklogic.Views.SummaryPage"
              x:DataType="vm:SummaryPageViewModel"
              Background="#F1F8E9">
@@ -32,30 +33,38 @@
 
     <ScrollViewer Margin="40">
       <StackPanel Spacing="20">
-        <TextBlock Text="Order review" 
-                   FontSize="32" 
-                   FontWeight="Black" 
+        <TextBlock Text="Order review"
+                   FontSize="32"
+                   FontWeight="Black"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
+        <!-- Infos du cabinet -->
+        <Border Background="White" Padding="15" CornerRadius="10"
+                BoxShadow="0 2 5 0 #20000000">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Cabinet configuration" FontWeight="Bold" FontSize="16"/>
+            <TextBlock Text="{Binding Cabinet.Width, StringFormat='Width: {0} cm'}" Foreground="Gray"/>
+            <TextBlock Text="{Binding Cabinet.Depth, StringFormat='Depth: {0} cm'}" Foreground="Gray"/>
+            <TextBlock Text="{Binding Cabinet.AngleIronColor, StringFormat='Angle Iron: {0}'}" Foreground="Gray"/>
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="Lockers" FontSize="20" FontWeight="Bold"/>
+
         <ItemsControl ItemsSource="{Binding FinalLockers}">
           <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border Background="White" 
-                      Margin="0,5" 
-                      Padding="15" 
-                      CornerRadius="10" 
+            <DataTemplate x:DataType="models:Locker">
+              <Border Background="White"
+                      Margin="0,5"
+                      Padding="15"
+                      CornerRadius="10"
                       BoxShadow="0 2 5 0 #20000000">
-                <Grid ColumnDefinitions="*, Auto">
-                  <StackPanel Grid.Column="0">
-                    <TextBlock Text="{Binding Description}" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Dimensions}" FontSize="12" Foreground="Gray"/>
-                  </StackPanel>
-                  <TextBlock Grid.Column="1" 
-                             Text="{Binding Price, StringFormat='{}{0} €'}" 
-                             VerticalAlignment="Center" 
-                             FontWeight="Bold"/>
-                </Grid>
+                <StackPanel>
+                  <TextBlock Text="{Binding DisplayName}" FontWeight="Bold"/>
+                  <TextBlock Text="{Binding Height, StringFormat='Height: {0} cm'}"
+                             FontSize="12" Foreground="Gray"/>
+                </StackPanel>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
@@ -63,13 +72,14 @@
 
         <Separator Height="2" Background="#B9CBA5" Margin="0,20"/>
 
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-          <TextBlock Text="Total to pay : " FontSize="24" VerticalAlignment="Center"/>
-          <TextBlock Text="{Binding TotalPrice, StringFormat='{}{0} €'}"
-                     FontSize="36" 
-                     FontWeight="Black" 
-                     Foreground="#2E7D32"/>
-        </StackPanel>
+        <TextBlock Text="Total lockers :"
+                   FontSize="18"
+                   HorizontalAlignment="Right"/>
+        <TextBlock Text="{Binding FinalLockers.Count}"
+                   FontSize="28"
+                   FontWeight="Black"
+                   HorizontalAlignment="Right"
+                   Foreground="#2E7D32"/>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
