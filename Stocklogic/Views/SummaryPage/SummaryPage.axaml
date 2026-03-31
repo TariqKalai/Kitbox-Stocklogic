@@ -4,31 +4,48 @@
              xmlns:models="using:Stocklogic.Models"
              x:Class="Stocklogic.Views.SummaryPage"
              x:DataType="vm:SummaryPageViewModel"
-             Background="#F1F8E9">
+             Background="#F1F8E9"
+             xmlns:conv="using:Stocklogic.Converters">
 
   <DockPanel LastChildFill="True">
-    <Border Height="60"
-            Background="White"
+    <Border Background="White"
             BorderBrush="#E0E0E0"
             BorderThickness="0,1,0,0"
-            DockPanel.Dock="Bottom">
-      <StackPanel Margin="0,0,20,0"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Center"
-                  Orientation="Horizontal">
-        <Button Content="Continue Shopping"
-                Command="{Binding ContinueShoppingCommand}"
-                Margin="0,0,20,0"
-                Background="Transparent"
-                FontWeight="Bold"
-                Foreground="Black" />
-        <Button Content="Pay"
-                Command="{Binding PayCommand}"
-                Background="#4CAF50"
-                CornerRadius="5"
-                Foreground="White"
-                Padding="30,10" />
-      </StackPanel>
+            DockPanel.Dock="Bottom"
+            Padding="20,12">
+      <Grid ColumnDefinitions="*,Auto">
+
+        <!-- Left: total price -->
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="Total" FontSize="12" Foreground="#888"/>
+          <TextBlock Text="{Binding TotalPrice, StringFormat='€{0:F2}'}"
+                     FontSize="22" FontWeight="Black" Foreground="#2E7D32"/>
+        </StackPanel>
+
+        <!-- Right: email + actions -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+          <TextBlock Text="{Binding PayMessage}"
+                     IsVisible="{Binding PayMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                     VerticalAlignment="Center"
+                     Foreground="#D32F2F" FontSize="12"/>
+          <TextBox Text="{Binding Email}"
+                   Watermark="Your email"
+                   Width="220"
+                   VerticalAlignment="Center"/>
+          <Button Content="Continue Shopping"
+                  Command="{Binding ContinueShoppingCommand}"
+                  Background="Transparent"
+                  FontWeight="Bold"
+                  Foreground="Black" />
+          <Button Content="Pay"
+                  Command="{Binding PayCommand}"
+                  Background="#4CAF50"
+                  CornerRadius="5"
+                  Foreground="White"
+                  Padding="30,10" />
+        </StackPanel>
+
+      </Grid>
     </Border>
 
     <ScrollViewer Margin="40">
@@ -79,7 +96,7 @@
                    FontSize="28"
                    FontWeight="Black"
                    HorizontalAlignment="Right"
-                   Foreground="#2E7D32"/>
+                   Foreground="#3da442"/>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
