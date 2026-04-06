@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Stocklogic.ViewModels"
+             x:Class="Stocklogic.Views.OrderConfirmationPage"
+             x:DataType="vm:OrderConfirmationPageViewModel"
+             Background="#F1F8E9">
+
+  <DockPanel LastChildFill="True">
+
+    <!-- Header identique aux autres pages -->
+    <StackPanel Background="#DCEDC8" DockPanel.Dock="Top">
+      <Grid Margin="20,10">
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+          <Image Width="35" Height="35" Source="/Assets/avalonia-logo.ico" />
+          <TextBlock Margin="10,0,5,0"
+                     VerticalAlignment="Center"
+                     FontSize="24"
+                     FontWeight="Black"
+                     Text="Stocklogic" />
+          <TextBlock Margin="0,0,0,5"
+                     VerticalAlignment="Bottom"
+                     FontSize="10"
+                     FontWeight="Bold"
+                     Text="Make your furniture!" />
+        </StackPanel>
+        <PathIcon Width="25"
+                  Height="25"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Center"
+                  Data="{StaticResource cart_regular}" />
+      </Grid>
+      <Rectangle Height="5" HorizontalAlignment="Stretch" Fill="#C5E1A5" />
+    </StackPanel>
+
+    <!-- Contenu centré -->
+    <Grid Margin="40">
+      <Border Background="#D9EDC3"
+              BorderBrush="#B9CBA5"
+              BorderThickness="15"
+              CornerRadius="60"
+              Padding="60,50">
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="20">
+
+          <TextBlock Text="Thank you for your order !"
+                     FontSize="36"
+                     FontWeight="Black"
+                     TextDecorations="Underline"
+                     HorizontalAlignment="Center" />
+
+          <TextBlock Text="{Binding OrderNumberText}"
+                     FontSize="22"
+                     FontWeight="Bold"
+                     HorizontalAlignment="Center" />
+
+          <TextBlock Text="You can now go to the cash register to pick up your order."
+                     FontSize="16"
+                     HorizontalAlignment="Center" />
+
+          <TextBlock Text="See you next time!"
+                     FontSize="32"
+                     FontWeight="Black"
+                     HorizontalAlignment="Center"
+                     Margin="0,20,0,0" />
+
+        </StackPanel>
+      </Border>
+    </Grid>
+
+  </DockPanel>
+</UserControl>

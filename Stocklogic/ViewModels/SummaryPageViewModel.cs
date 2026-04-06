@@ -58,7 +58,7 @@ public partial class SummaryPageViewModel : ViewModelBase
             return;
         }
 
-        NavigationService.Navigate(new StartPage());
+        NavigationService.Navigate(new OrderConfirmationPage(orderId));
     }
 
     private void CalculateTotal()
