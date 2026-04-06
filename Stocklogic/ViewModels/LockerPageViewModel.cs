@@ -16,17 +16,17 @@ public partial class LockerPageViewModel : ViewModelBase
     public ObservableCollection<Locker> Lockers { get; }
 
     // Listes d'options statiques depuis le service
-    public IReadOnlyList<int>    AvailableHeights    { get; } = CabinetComposerService.ValidLockerHeights;
-    public IReadOnlyList<string> AvailableColors     { get; } = CabinetComposerService.PanelColors;
+    public IReadOnlyList<int> AvailableHeights { get; } = CabinetComposerService.ValidLockerHeights;
+    public IReadOnlyList<string> AvailableColors { get; } = CabinetComposerService.PanelColors;
     public IReadOnlyList<string> AvailableDoorColors { get; } = CabinetComposerService.DoorColors;
-    public IReadOnlyList<string> AngleIronColors     { get; } = CabinetComposerService.AngleIronColors;
+    public IReadOnlyList<string> AngleIronColors { get; } = CabinetComposerService.AngleIronColors;
 
     public bool DoorAvailable => CabinetComposerService.ValidWidthsWithDoor.Contains(Cabinet.Width);
 
     // Champs du formulaire
-    [ObservableProperty] private int    _selectedHeight;
-    [ObservableProperty] private string _selectedColor     = "White";
-    [ObservableProperty] private bool   _hasDoors;
+    [ObservableProperty] private int _selectedHeight;
+    [ObservableProperty] private string _selectedColor = "White";
+    [ObservableProperty] private bool _hasDoors;
     [ObservableProperty] private string _selectedDoorColor = "White";
 
     [ObservableProperty]
@@ -34,7 +34,7 @@ public partial class LockerPageViewModel : ViewModelBase
     partial void OnSelectedAngleIronColorChanged(string value) => Cabinet.AngleIronColor = value;
 
     [ObservableProperty] private decimal _totalPrice;
-    [ObservableProperty] private string  _statusMessage = string.Empty;
+    [ObservableProperty] private string _statusMessage = string.Empty;
 
     // État de sélection / mode édition
     [ObservableProperty]
@@ -44,24 +44,24 @@ public partial class LockerPageViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(CanAddLocker))]
     private Locker? _selectedLocker;
 
-    public bool   IsEditMode  => SelectedLocker is not null;
-    public bool   IsAddMode   => SelectedLocker is null;
-    public string PanelTitle  => IsEditMode
+    public bool IsEditMode => SelectedLocker is not null;
+    public bool IsAddMode => SelectedLocker is null;
+    public string PanelTitle => IsEditMode
         ? $"Edit Locker #{Lockers.IndexOf(SelectedLocker!) + 1}"
         : "Add New Locker";
-    public bool   CanAddLocker => Cabinet.CanAddLocker && IsAddMode;
+    public bool CanAddLocker => Cabinet.CanAddLocker && IsAddMode;
 
     // Résumé (notifiés depuis UpdateOverview)
     public int TotalItemsCount => Lockers.Count;
-    public int TotalHeight     => Lockers.Sum(l => l.Height);
+    public int TotalHeight => Lockers.Sum(l => l.Height);
     public int AngleIronHeight => Lockers.Sum(l => l.Height + 4);
-    public bool HasLockers     => Lockers.Count > 0;
-    public bool IsEmpty        => Lockers.Count == 0;
+    public bool HasLockers => Lockers.Count > 0;
+    public bool IsEmpty => Lockers.Count == 0;
 
     public LockerPageViewModel(Cabinet cabinet)
     {
-        Cabinet         = cabinet;
-        Lockers         = new ObservableCollection<Locker>(cabinet.Lockers);
+        Cabinet = cabinet;
+        Lockers = new ObservableCollection<Locker>(cabinet.Lockers);
         _selectedHeight = AvailableHeights[0];
     }
 
@@ -70,9 +70,9 @@ public partial class LockerPageViewModel : ViewModelBase
     {
         AddLockerCommand.NotifyCanExecuteChanged();
         if (value is null) return;
-        SelectedHeight    = value.Height;
-        SelectedColor     = value.Color;
-        HasDoors          = value.HasDoors;
+        SelectedHeight = value.Height;
+        SelectedColor = value.Color;
+        HasDoors = value.HasDoors;
         SelectedDoorColor = value.DoorColor;
     }
 
@@ -81,11 +81,11 @@ public partial class LockerPageViewModel : ViewModelBase
     {
         var locker = new Locker
         {
-            Height    = SelectedHeight,
-            Depth     = Cabinet.Depth,
-            Width     = Cabinet.Width,
-            Color     = SelectedColor,
-            HasDoors  = HasDoors && DoorAvailable,
+            Height = SelectedHeight,
+            Depth = Cabinet.Depth,
+            Width = Cabinet.Width,
+            Color = SelectedColor,
+            HasDoors = HasDoors && DoorAvailable,
             DoorColor = SelectedDoorColor
         };
         Cabinet.Lockers.Add(locker);
@@ -103,9 +103,9 @@ public partial class LockerPageViewModel : ViewModelBase
         if (SelectedLocker is null) return;
 
         int idx = Lockers.IndexOf(SelectedLocker);
-        SelectedLocker.Height    = SelectedHeight;
-        SelectedLocker.Color     = SelectedColor;
-        SelectedLocker.HasDoors  = HasDoors && DoorAvailable;
+        SelectedLocker.Height = SelectedHeight;
+        SelectedLocker.Color = SelectedColor;
+        SelectedLocker.HasDoors = HasDoors && DoorAvailable;
         SelectedLocker.DoorColor = SelectedDoorColor;
 
         // Remplacement en place pour déclencher CollectionChanged → UI se rafraîchit
@@ -139,9 +139,9 @@ public partial class LockerPageViewModel : ViewModelBase
 
     private void ResetForm()
     {
-        SelectedHeight    = AvailableHeights[0];
-        SelectedColor     = "White";
-        HasDoors          = false;
+        SelectedHeight = AvailableHeights[0];
+        SelectedColor = "White";
+        HasDoors = false;
         SelectedDoorColor = "White";
     }
 
@@ -170,7 +170,8 @@ public partial class LockerPageViewModel : ViewModelBase
         }
         StatusMessage = string.Empty;
         Cabinet.AngleIronColor = SelectedAngleIronColor;
-        var summaryVM   = new SummaryPageViewModel(Cabinet.Lockers.ToList(), Cabinet);
+        var order = new CabinetOrder(Cabinet.Lockers.ToList(), Cabinet);
+        var summaryVM = new SummaryPageViewModel(order);
         var summaryPage = new SummaryPage { DataContext = summaryVM };
         NavigationService.Navigate(summaryPage);
     }

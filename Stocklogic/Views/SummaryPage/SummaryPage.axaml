@@ -7,6 +7,7 @@
              Background="#F1F8E9">
 
   <DockPanel LastChildFill="True">
+
     <Border Height="60"
             Background="White"
             BorderBrush="#E0E0E0"
@@ -33,53 +34,60 @@
 
     <ScrollViewer Margin="40">
       <StackPanel Spacing="20">
-        <TextBlock Text="Order review"
+
+        <TextBlock Text="Order Review"
                    FontSize="32"
                    FontWeight="Black"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
-        <!-- Infos du cabinet -->
-        <Border Background="White" Padding="15" CornerRadius="10"
-                BoxShadow="0 2 5 0 #20000000">
-          <StackPanel Spacing="4">
-            <TextBlock Text="Cabinet configuration" FontWeight="Bold" FontSize="16"/>
-            <TextBlock Text="{Binding Cabinet.Width, StringFormat='Width: {0} cm'}" Foreground="Gray"/>
-            <TextBlock Text="{Binding Cabinet.Depth, StringFormat='Depth: {0} cm'}" Foreground="Gray"/>
-            <TextBlock Text="{Binding Cabinet.AngleIronColor, StringFormat='Angle Iron: {0}'}" Foreground="Gray"/>
-          </StackPanel>
-        </Border>
-
-        <TextBlock Text="Lockers" FontSize="20" FontWeight="Bold"/>
-
-        <ItemsControl ItemsSource="{Binding FinalLockers}">
+        <ItemsControl ItemsSource="{Binding AllOrders}">
           <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="models:Locker">
+            <DataTemplate x:DataType="models:CabinetOrder">
               <Border Background="White"
-                      Margin="0,5"
-                      Padding="15"
+                      Margin="0,0,0,16"
+                      Padding="20"
                       CornerRadius="10"
                       BoxShadow="0 2 5 0 #20000000">
-                <StackPanel>
-                  <TextBlock Text="{Binding DisplayName}" FontWeight="Bold"/>
-                  <TextBlock Text="{Binding Height, StringFormat='Height: {0} cm'}"
-                             FontSize="12" Foreground="Gray"/>
+                <StackPanel Spacing="8">
+
+                  <TextBlock FontWeight="Bold" FontSize="16"
+                             Text="{Binding Cabinet.Width, StringFormat='Cabinet — Width: {0} cm'}"/>
+                  <TextBlock Foreground="Gray"
+                             Text="{Binding Cabinet.Depth, StringFormat='Depth: {0} cm'}"/>
+                  <TextBlock Foreground="Gray"
+                             Text="{Binding Cabinet.AngleIronColor, StringFormat='Angle Iron: {0}'}"/>
+
+                  <Separator Height="1" Background="#E0E0E0" Margin="0,4"/>
+
+                  <TextBlock Text="Lockers" FontSize="14" FontWeight="Bold"/>
+
+                  <ItemsControl ItemsSource="{Binding Lockers}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="models:Locker">
+                        <Border Background="#F9FBF7"
+                                Margin="0,4"
+                                Padding="12,8"
+                                CornerRadius="6">
+                          <StackPanel>
+                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Height, StringFormat='Height: {0} cm'}"
+                                       FontSize="12" Foreground="Gray"/>
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <TextBlock Foreground="#2E7D32" FontWeight="Bold"
+                             Text="{Binding Lockers.Count, StringFormat='Total lockers: {0}'}"/>
+
                 </StackPanel>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Separator Height="2" Background="#B9CBA5" Margin="0,20"/>
-
-        <TextBlock Text="Total lockers :"
-                   FontSize="18"
-                   HorizontalAlignment="Right"/>
-        <TextBlock Text="{Binding FinalLockers.Count}"
-                   FontSize="28"
-                   FontWeight="Black"
-                   HorizontalAlignment="Right"
-                   Foreground="#2E7D32"/>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>

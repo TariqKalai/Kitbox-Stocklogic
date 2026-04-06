@@ -11,4 +11,5 @@ public partial class LockerPage : UserControl
         InitializeComponent();
         DataContext = new LockerPageViewModel(cabinet);
     }
+   
 }
