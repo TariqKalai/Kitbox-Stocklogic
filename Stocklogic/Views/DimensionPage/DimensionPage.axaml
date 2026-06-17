@@ -65,7 +65,7 @@
           <TextBlock Margin="0,0,0,20"
                      FontSize="32"
                      FontWeight="Black"
-                     Text="Choose your depth and length"
+                     Text="Choose your depth and width"
                      TextDecorations="Underline" />
           <StackPanel Orientation="Horizontal">
             <TextBlock Width="150"

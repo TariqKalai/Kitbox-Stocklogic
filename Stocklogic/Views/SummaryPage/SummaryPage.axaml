@@ -20,6 +20,12 @@
           <TextBlock Text="Total" FontSize="12" Foreground="#888"/>
           <TextBlock Text="{Binding TotalPrice, StringFormat='€{0:F2}'}"
                      FontSize="22" FontWeight="Black" Foreground="#2E7D32"/>
+          <TextBlock Text="{Binding DepositAmount, StringFormat='Deposit due now (30%): €{0:F2} — rest on pickup'}"
+                     IsVisible="{Binding IsDepositNeeded}"
+                     FontSize="12" FontWeight="Bold" Foreground="#D32F2F"/>
+          <TextBlock Text="All parts in stock — pay in full now"
+                     IsVisible="{Binding !IsDepositNeeded}"
+                     FontSize="12" Foreground="#2E7D32"/>
         </StackPanel>
 
         <!-- Right: email + actions -->
